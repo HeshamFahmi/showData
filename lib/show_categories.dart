@@ -7,6 +7,48 @@ class ShowCategories extends StatefulWidget {
   _ShowCategoriesState createState() => _ShowCategoriesState();
 }
 
+final Firestore firestore = Firestore.instance;
+
+void _delete(String categoryNamel) async {
+  try {
+    firestore.collection('Categories').document(categoryNamel).delete();
+  } catch (e) {
+    print(e);
+  }
+}
+
+showAlertDialog(BuildContext context, String name) {
+  // set up the buttons
+  Widget cancelButton = FlatButton(
+    child: Text("Ok"),
+    onPressed: () {
+      _delete(name);
+    },
+  );
+  Widget continueButton = FlatButton(
+    child: Text("Cancel"),
+    onPressed: () {
+      Navigator.of(context).pop();
+    },
+  );
+  // set up the AlertDialog
+  AlertDialog alert = AlertDialog(
+    title: Text("Warning"),
+    content: Text("Would you like to Delete this Category ..."),
+    actions: [
+      cancelButton,
+      continueButton,
+    ],
+  );
+  // show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
+}
+
 class _ShowCategoriesState extends State<ShowCategories> {
   @override
   Widget build(BuildContext context) {
@@ -87,7 +129,8 @@ class _ShowCategoriesState extends State<ShowCategories> {
                                           ),
                                           child: IconButton(
                                             onPressed: () {
-                                              //  You enter here what you want the button to do once the user interacts with it
+                                              showAlertDialog(
+                                                  context, document.documentID);
                                             },
                                             icon: Icon(
                                               Icons.delete,
